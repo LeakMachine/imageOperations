@@ -55,13 +55,23 @@ namespace imageLab1
             float res;
             Bitmap bmp1 = new Bitmap(pictureBox1.Image);
             Bitmap bmp2 = new Bitmap(pictureBox2.Image);
-            res = func.imageCompare1(bmp1, bmp2);
+            res = func.imageCompareMSE(bmp1, bmp2);
             label1.Text = res.ToString();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void сравнитьToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Functions func = new Functions();
+            float res;
+            Bitmap bmp1 = new Bitmap(pictureBox1.Image);
+            Bitmap bmp2 = new Bitmap(pictureBox2.Image);
+            res = func.imageCompareUIQ(bmp1, bmp2);
+            label1.Text = res.ToString();
         }
     }
 }

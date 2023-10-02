@@ -18,7 +18,7 @@ namespace imageLab1
             return value;
         }
 
-        public float imageCompare1(Bitmap sourceImage1, Bitmap sourceImage2)
+        public float imageCompareMSE(Bitmap sourceImage1, Bitmap sourceImage2)
         {
             int imageWidth = sourceImage1.Width;
             int imageHeight = sourceImage1.Height;
@@ -33,10 +33,51 @@ namespace imageLab1
                     Color pixelColor2 = sourceImage2.GetPixel(i, j);
                     pixelIntensity1 = Clamp((int)(0.36 * pixelColor1.R) + (int)(0.53 * pixelColor1.G) + (int)(0.11 * pixelColor1.B), 0, 255);
                     pixelIntensity2 = Clamp((int)(0.36 * pixelColor2.R) + (int)(0.53 * pixelColor2.G) + (int)(0.11 * pixelColor2.B), 0, 255);
-                    res += (pixelIntensity1 = pixelIntensity2) * (pixelIntensity1 = pixelIntensity2);
+                    res += (pixelIntensity1 - pixelIntensity2) * (pixelIntensity1 - pixelIntensity2);
                 }
             }
-            res = res * (1 / totalPixelCount); 
+            res = res / totalPixelCount; 
+            return res;
+        }
+
+        public float imageCompareUIQ(Bitmap sourceImage1, Bitmap sourceImage2)
+        {
+            int imageWidth = sourceImage1.Width;
+            int imageHeight = sourceImage1.Height;
+            float res = 0, ySig = 0, xSig = 0, xG = 0, yG = 0, xyG = 0;
+            int totalPixelCount = imageHeight * imageWidth;
+            int pixelIntensity1, pixelIntensity2;
+            for (int i = 0; i < imageWidth; i++)
+            {
+                for (int j = 0; j < imageHeight; j++)
+                {
+                    Color pixelColor1 = sourceImage1.GetPixel(i, j);
+                    Color pixelColor2 = sourceImage2.GetPixel(i, j);
+                    pixelIntensity1 = Clamp((int)(0.36 * pixelColor1.R) + (int)(0.53 * pixelColor1.G) + (int)(0.11 * pixelColor1.B), 0, 255);
+                    pixelIntensity2 = Clamp((int)(0.36 * pixelColor2.R) + (int)(0.53 * pixelColor2.G) + (int)(0.11 * pixelColor2.B), 0, 255);
+                    xSig += pixelIntensity1;
+                    ySig += pixelIntensity2;
+                }
+            }
+            xSig = xSig / totalPixelCount;
+            ySig = ySig / totalPixelCount;
+            for (int i = 0; i < imageWidth; i++)
+            {
+                for (int j = 0; j < imageHeight; j++)
+                {
+                    Color pixelColor1 = sourceImage1.GetPixel(i, j);
+                    Color pixelColor2 = sourceImage2.GetPixel(i, j);
+                    pixelIntensity1 = Clamp((int)(0.36 * pixelColor1.R) + (int)(0.53 * pixelColor1.G) + (int)(0.11 * pixelColor1.B), 0, 255);
+                    pixelIntensity2 = Clamp((int)(0.36 * pixelColor2.R) + (int)(0.53 * pixelColor2.G) + (int)(0.11 * pixelColor2.B), 0, 255);
+                    xG += (pixelIntensity1 - xSig) * (pixelIntensity1 - xSig);
+                    yG += (pixelIntensity2 - ySig) * (pixelIntensity2 - ySig);
+                    xyG += (pixelIntensity1 - xSig) * (pixelIntensity1 - xSig);
+                }
+            }
+            xG = xG / totalPixelCount;
+            yG = yG / totalPixelCount;
+            xyG = xyG / totalPixelCount;
+            res = ((2 * xSig * ySig) / ((xSig * xSig) + (ySig * ySig))) * ((2 * xyG) / ((xG * xG) + (yG * yG))) ;
             return res;
         }
 
