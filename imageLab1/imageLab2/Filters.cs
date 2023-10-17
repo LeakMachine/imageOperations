@@ -11,6 +11,7 @@ namespace imageLab2
 {
     class Filters
     {
+        public double[] erlang;
         public int Clamp(int value, int min, int max)
         {
             if (value < min)
@@ -36,7 +37,7 @@ namespace imageLab2
             image.UnlockBits(image_data);
 
             byte[] noise = new byte[bytes];
-            double[] erlang = new double[256];
+            erlang = new double[256];
             double a = 5;
             Random rnd = new Random();
             double sum = 0;
