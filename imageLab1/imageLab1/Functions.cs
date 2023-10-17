@@ -78,7 +78,7 @@ namespace imageLab1
             yG = yG / totalPixelCount;
             xyG = xyG / totalPixelCount;
             float res1 = ((2 * xSig * ySig) / ((xSig * xSig) + (ySig * ySig)));
-            float res2 = ((2 * xyG) / ((xG + yG)));
+            float res2 = ((2 * xyG * xyG) / (((xG * xG) + (yG * yG))));
             res = res1 * res2;
             return res;
         }
