@@ -71,13 +71,15 @@ namespace imageLab1
                     pixelIntensity2 = Clamp((int)(0.36 * pixelColor2.R) + (int)(0.53 * pixelColor2.G) + (int)(0.11 * pixelColor2.B), 0, 255);
                     xG += (pixelIntensity1 - xSig) * (pixelIntensity1 - xSig);
                     yG += (pixelIntensity2 - ySig) * (pixelIntensity2 - ySig);
-                    xyG += (pixelIntensity1 - xSig) * (pixelIntensity1 - xSig);
+                    xyG += (pixelIntensity1 - xSig) * (pixelIntensity2 - ySig);
                 }
             }
             xG = xG / totalPixelCount;
             yG = yG / totalPixelCount;
             xyG = xyG / totalPixelCount;
-            res = ((2 * xSig * ySig) / ((xSig * xSig) + (ySig * ySig))) * ((2 * xyG) / ((xG * xG) + (yG * yG))) ;
+            float res1 = ((2 * xSig * ySig) / ((xSig * xSig) + (ySig * ySig)));
+            float res2 = ((2 * xyG) / ((xG + yG)));
+            res = res1 * res2;
             return res;
         }
 
