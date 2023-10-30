@@ -38,6 +38,8 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
+            this.гармоническоеСреднееToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.фильтрСреднейТочкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -69,21 +71,24 @@
             // открытьToolStripMenuItem
             // 
             this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(206, 26);
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.открытьToolStripMenuItem.Text = "Открыть";
             this.открытьToolStripMenuItem.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
             // сравнитьToolStripMenuItem
             // 
             this.сравнитьToolStripMenuItem.Name = "сравнитьToolStripMenuItem";
-            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(206, 26);
+            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.сравнитьToolStripMenuItem.Text = "Применить шум";
             this.сравнитьToolStripMenuItem.Click += new System.EventHandler(this.сравнитьToolStripMenuItem_Click);
             // 
             // сравнитьToolStripMenuItem1
             // 
+            this.сравнитьToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.гармоническоеСреднееToolStripMenuItem,
+            this.фильтрСреднейТочкиToolStripMenuItem});
             this.сравнитьToolStripMenuItem1.Name = "сравнитьToolStripMenuItem1";
-            this.сравнитьToolStripMenuItem1.Size = new System.Drawing.Size(206, 26);
+            this.сравнитьToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.сравнитьToolStripMenuItem1.Text = "Убрать шум";
             this.сравнитьToolStripMenuItem1.Click += new System.EventHandler(this.сравнитьToolStripMenuItem1_Click);
             // 
@@ -124,6 +129,20 @@
             this.zedGraphControl1.TabIndex = 3;
             this.zedGraphControl1.UseExtendedPrintDialog = true;
             // 
+            // гармоническоеСреднееToolStripMenuItem
+            // 
+            this.гармоническоеСреднееToolStripMenuItem.Name = "гармоническоеСреднееToolStripMenuItem";
+            this.гармоническоеСреднееToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
+            this.гармоническоеСреднееToolStripMenuItem.Text = "Гармоническое среднее";
+            this.гармоническоеСреднееToolStripMenuItem.Click += new System.EventHandler(this.гармоническоеСреднееToolStripMenuItem_Click);
+            // 
+            // фильтрСреднейТочкиToolStripMenuItem
+            // 
+            this.фильтрСреднейТочкиToolStripMenuItem.Name = "фильтрСреднейТочкиToolStripMenuItem";
+            this.фильтрСреднейТочкиToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
+            this.фильтрСреднейТочкиToolStripMenuItem.Text = "Фильтр средней точки";
+            this.фильтрСреднейТочкиToolStripMenuItem.Click += new System.EventHandler(this.фильтрСреднейТочкиToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -158,6 +177,8 @@
         private System.Windows.Forms.ToolStripMenuItem сравнитьToolStripMenuItem1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private ZedGraph.ZedGraphControl zedGraphControl1;
+        private System.Windows.Forms.ToolStripMenuItem гармоническоеСреднееToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem фильтрСреднейТочкиToolStripMenuItem;
     }
 }
 

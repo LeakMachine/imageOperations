@@ -33,10 +33,11 @@
             this.открытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.открытьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.сравнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сравнитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.сравнитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.сравнитьUIQСреднееToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -60,7 +61,8 @@
             this.открытьToolStripMenuItem,
             this.открытьToolStripMenuItem1,
             this.сравнитьToolStripMenuItem,
-            this.сравнитьToolStripMenuItem1});
+            this.сравнитьToolStripMenuItem1,
+            this.сравнитьUIQСреднееToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
@@ -68,28 +70,35 @@
             // открытьToolStripMenuItem
             // 
             this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
             this.открытьToolStripMenuItem.Text = "Открыть первую";
             this.открытьToolStripMenuItem.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
             // открытьToolStripMenuItem1
             // 
             this.открытьToolStripMenuItem1.Name = "открытьToolStripMenuItem1";
-            this.открытьToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.открытьToolStripMenuItem1.Size = new System.Drawing.Size(248, 26);
             this.открытьToolStripMenuItem1.Text = "Открыть вторую";
             this.открытьToolStripMenuItem1.Click += new System.EventHandler(this.открытьToolStripMenuItem1_Click);
             // 
             // сравнитьToolStripMenuItem
             // 
             this.сравнитьToolStripMenuItem.Name = "сравнитьToolStripMenuItem";
-            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
             this.сравнитьToolStripMenuItem.Text = "Сравнить MSE";
             this.сравнитьToolStripMenuItem.Click += new System.EventHandler(this.сравнитьToolStripMenuItem_Click);
+            // 
+            // сравнитьToolStripMenuItem1
+            // 
+            this.сравнитьToolStripMenuItem1.Name = "сравнитьToolStripMenuItem1";
+            this.сравнитьToolStripMenuItem1.Size = new System.Drawing.Size(248, 26);
+            this.сравнитьToolStripMenuItem1.Text = "Сравнить UIQ";
+            this.сравнитьToolStripMenuItem1.Click += new System.EventHandler(this.сравнитьToolStripMenuItem1_Click);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(16, 90);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(743, 335);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -100,7 +109,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Location = new System.Drawing.Point(767, 90);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(743, 335);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -117,12 +126,12 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "0";
             // 
-            // сравнитьToolStripMenuItem1
+            // сравнитьUIQСреднееToolStripMenuItem
             // 
-            this.сравнитьToolStripMenuItem1.Name = "сравнитьToolStripMenuItem1";
-            this.сравнитьToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.сравнитьToolStripMenuItem1.Text = "Сравнить UIQ";
-            this.сравнитьToolStripMenuItem1.Click += new System.EventHandler(this.сравнитьToolStripMenuItem1_Click);
+            this.сравнитьUIQСреднееToolStripMenuItem.Name = "сравнитьUIQСреднееToolStripMenuItem";
+            this.сравнитьUIQСреднееToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
+            this.сравнитьUIQСреднееToolStripMenuItem.Text = "Сравнить UIQ среднее";
+            this.сравнитьUIQСреднееToolStripMenuItem.Click += new System.EventHandler(this.сравнитьUIQСреднееToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -134,7 +143,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -158,6 +167,7 @@
         private System.Windows.Forms.ToolStripMenuItem сравнитьToolStripMenuItem;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem сравнитьToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem сравнитьUIQСреднееToolStripMenuItem;
     }
 }
 

@@ -105,5 +105,21 @@ namespace imageLab2
 
             return result;
         }
+
+        private void гармоническоеСреднееToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filters = new Filters();
+            Bitmap tempImage = new Bitmap(pictureBox2.Image);
+            pictureBox2.Image = filters.HarmonicMean(tempImage);
+            pictureBox2.Refresh();
+        }
+
+        private void фильтрСреднейТочкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filters = new Filters();
+            Bitmap tempImage = new Bitmap(pictureBox2.Image);
+            pictureBox2.Image = filters.FilterMidpoint(tempImage);
+            pictureBox2.Refresh();
+        }
     }
 }
