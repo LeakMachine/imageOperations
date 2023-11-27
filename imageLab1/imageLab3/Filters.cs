@@ -17,6 +17,174 @@ using AForge.Math.Geometry;
 
 namespace imageLab3
 {
+    class KMeansImageSegmentation
+    {
+        public Bitmap Main(Bitmap image)
+        {
+
+            // Параметры алгоритма
+            int k = 5; // количество сегментов (центроидов)
+            int maxIterations = 20; // максимальное количество итераций
+            double threshold = 1.0; // пороговое значение изменения центров кластеров
+
+            // Инициализация K-средних
+            List<Color> centroids = InitializeCentroids(image, k);
+            Dictionary<Color, List<Color>> clusters = new Dictionary<Color, List<Color>>();
+
+            for (int iteration = 0; iteration < maxIterations; iteration++)
+            {
+                // Нахождение ближайшего центра для каждого пикселя и формирование кластеров
+                clusters = AssignPixelsToClusters(image, centroids);
+
+                // Обновление центров кластеров
+                List<Color> oldCentroids = new List<Color>(centroids);
+                centroids = UpdateCentroids(clusters);
+
+                // Проверка на сходимость (по пороговому значению изменения центров)
+                double maxShift = MaxShift(oldCentroids, centroids);
+                if (maxShift < threshold)
+                    break;
+            }
+
+            // Применение цветов кластеров к изображению
+            ApplyClustersToImage(image, clusters);
+
+            // Сохранение результата
+            return image;
+        }
+
+        // Инициализация центроидов случайными цветами изображения
+        static List<Color> InitializeCentroids(Bitmap image, int k)
+        {
+            List<Color> centroids = new List<Color>();
+            Random random = new Random();
+
+            for (int i = 0; i < k; i++)
+            {
+                int x = random.Next(image.Width);
+                int y = random.Next(image.Height);
+                centroids.Add(image.GetPixel(x, y));
+            }
+
+            return centroids;
+        }
+
+        // Нахождение ближайшего центра для каждого пикселя и формирование кластеров
+        static Dictionary<Color, List<Color>> AssignPixelsToClusters(Bitmap image, List<Color> centroids)
+        {
+            Dictionary<Color, List<Color>> clusters = new Dictionary<Color, List<Color>>();
+
+            foreach (Color centroid in centroids)
+            {
+                clusters[centroid] = new List<Color>();
+            }
+
+            for (int x = 0; x < image.Width; x++)
+            {
+                for (int y = 0; y < image.Height; y++)
+                {
+                    Color pixel = image.GetPixel(x, y);
+                    Color closestCentroid = FindClosestCentroid(pixel, centroids);
+                    clusters[closestCentroid].Add(pixel);
+                }
+            }
+
+            return clusters;
+        }
+
+        // Нахождение ближайшего центра для пикселя
+        static Color FindClosestCentroid(Color pixel, List<Color> centroids)
+        {
+            double minDistance = double.MaxValue;
+            Color closest = Color.Empty;
+
+            foreach (Color centroid in centroids)
+            {
+                double distance = CalculateColorDistance(pixel, centroid);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = centroid;
+                }
+            }
+
+            return closest;
+        }
+
+        // Расчет евклидова расстояния между цветами
+        static double CalculateColorDistance(Color a, Color b)
+        {
+            double redDiff = a.R - b.R;
+            double greenDiff = a.G - b.G;
+            double blueDiff = a.B - b.B;
+
+            return Math.Sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
+        }
+
+        // Обновление центров кластеров
+        static List<Color> UpdateCentroids(Dictionary<Color, List<Color>> clusters)
+        {
+            List<Color> centroids = new List<Color>();
+
+            foreach (var cluster in clusters)
+            {
+                Color newCentroid = CalculateClusterMean(cluster.Value);
+                centroids.Add(newCentroid);
+            }
+
+            return centroids;
+        }
+
+        // Вычисление среднего цвета кластера
+        static Color CalculateClusterMean(List<Color> cluster)
+        {
+            int totalRed = 0, totalGreen = 0, totalBlue = 0;
+
+            foreach (Color pixel in cluster)
+            {
+                totalRed += pixel.R;
+                totalGreen += pixel.G;
+                totalBlue += pixel.B;
+            }
+
+            int meanRed = totalRed / cluster.Count;
+            int meanGreen = totalGreen / cluster.Count;
+            int meanBlue = totalBlue / cluster.Count;
+
+            return Color.FromArgb(meanRed, meanGreen, meanBlue);
+        }
+
+        // Вычисление максимального изменения центров кластеров
+        static double MaxShift(List<Color> oldCentroids, List<Color> newCentroids)
+        {
+            double maxShift = 0;
+
+            int minCount = Math.Min(oldCentroids.Count, newCentroids.Count);
+
+            for (int i = 0; i < minCount; i++)
+            {
+                double distance = CalculateColorDistance(oldCentroids[i], newCentroids[i]);
+                if (distance > maxShift)
+                    maxShift = distance;
+            }
+
+            return maxShift;
+        }
+
+        // Применение цветов кластеров к изображению
+        static void ApplyClustersToImage(Bitmap image, Dictionary<Color, List<Color>> clusters)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                for (int y = 0; y < image.Height; y++)
+                {
+                    Color pixel = image.GetPixel(x, y);
+                    Color closestCentroid = FindClosestCentroid(pixel, new List<Color>(clusters.Keys));
+                    image.SetPixel(x, y, closestCentroid);
+                }
+            }
+        }
+    }
     abstract class Filters
     {
         public double[] erlang;

@@ -87,9 +87,9 @@ namespace imageLab3
 
         private void сегментироватьИзображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filters = new SobelFilter();
+            KMeansImageSegmentation seg = new KMeansImageSegmentation();
             Bitmap tempImage = new Bitmap(pictureBox1.Image);
-            pictureBox2.Image = filters.SegmentImage(tempImage,4,2);
+            pictureBox2.Image = seg.Main(tempImage);
             pictureBox2.Refresh();
         }
     }
