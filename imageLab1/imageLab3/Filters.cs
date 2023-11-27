@@ -8,8 +8,12 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel;
+using AForge;
 using AForge.Imaging;
 using AForge.Imaging.Filters;
+using AForge.Math.Geometry;
+
+
 
 namespace imageLab3
 {
@@ -24,6 +28,114 @@ namespace imageLab3
                 return max;
             return value;
         }
+        public Bitmap SegmentImage(Bitmap originalImage, int numSegments, int maxIterations)
+        {
+            // Создаем список для хранения центроидов (средних цветов) каждого сегмента
+            List<Color> centroids = new List<Color>();
+
+            // Инициализация центроидов случайными цветами из изображения
+            Random rand = new Random();
+            for (int i = 0; i < numSegments; i++)
+            {
+                int randX = rand.Next(originalImage.Width);
+                int randY = rand.Next(originalImage.Height);
+                Color pixelColor = originalImage.GetPixel(randX, randY);
+                centroids.Add(pixelColor);
+            }
+
+            // Применение K-средних для кластеризации пикселей по цветам
+            for (int iteration = 0; iteration < maxIterations; iteration++)
+            {
+                Dictionary<Color, List<Color>> clusters = new Dictionary<Color, List<Color>>();
+
+                // Создаем список для каждого центроида
+                for (int i = 0; i < numSegments; i++)
+                {
+                    if (i >= 0 && i < centroids.Count && !clusters.ContainsKey(centroids[i]))
+                    {
+                        clusters.Add(centroids[i], new List<Color>());
+                    }
+                }
+
+                // Проходим по каждому пикселю изображения
+                for (int x = 0; x < originalImage.Width; x++)
+                {
+                    for (int y = 0; y < originalImage.Height; y++)
+                    {
+                        Color pixelColor = originalImage.GetPixel(x, y);
+
+                        // Находим ближайший центроид для текущего пикселя
+                        Color nearestCentroid = FindNearestCentroid(pixelColor, centroids);
+
+                        // Добавляем текущий пиксель в кластер ближайшего центроида
+                        clusters[nearestCentroid].Add(pixelColor);
+                    }
+                }
+
+                // Обновляем центроиды средними значениями цветов в каждом кластере
+                centroids.Clear();
+                foreach (var cluster in clusters)
+                {
+                    if (cluster.Value.Count > 0)
+                    {
+                        int avgR = 0, avgG = 0, avgB = 0;
+                        foreach (var color in cluster.Value)
+                        {
+                            avgR += color.R;
+                            avgG += color.G;
+                            avgB += color.B;
+                        }
+                        avgR /= cluster.Value.Count;
+                        avgG /= cluster.Value.Count;
+                        avgB /= cluster.Value.Count;
+                        centroids.Add(Color.FromArgb(avgR, avgG, avgB));
+                    }
+                    else
+                    {
+                        centroids.Add(cluster.Key);
+                    }
+                }
+            }
+
+            // Создаем новое изображение с сегментированными цветами
+            Bitmap segmentedImg = new Bitmap(originalImage.Width, originalImage.Height);
+
+            // Заполняем пиксели сегментированным цветом
+            for (int x = 0; x < originalImage.Width; x++)
+            {
+                for (int y = 0; y < originalImage.Height; y++)
+                {
+                    Color pixelColor = originalImage.GetPixel(x, y);
+                    Color nearestCentroid = FindNearestCentroid(pixelColor, centroids);
+                    segmentedImg.SetPixel(x, y, nearestCentroid);
+                }
+            }
+
+            return segmentedImg;
+        }
+
+        // Функция для поиска ближайшего центроида для заданного цвета
+        private Color FindNearestCentroid(Color color, List<Color> centroids)
+        {
+            double minDistance = double.MaxValue;
+            Color nearestCentroid = centroids[0];
+
+            foreach (var centroid in centroids)
+            {
+                double distance = Math.Sqrt(
+                    Math.Pow(color.R - centroid.R, 2) +
+                    Math.Pow(color.G - centroid.G, 2) +
+                    Math.Pow(color.B - centroid.B, 2));
+
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestCentroid = centroid;
+                }
+            }
+
+            return nearestCentroid;
+        }
 
         public Bitmap houghCircles(Bitmap bmp2)
         {
@@ -33,7 +145,7 @@ namespace imageLab3
                 new Threshold(0x40)
             });
             Bitmap bmp = filter.Apply(bmp2);
-            HoughCircleTransformation circleTransform = new HoughCircleTransformation(35);
+            HoughCircleTransformation circleTransform = new HoughCircleTransformation(10);
             circleTransform.ProcessImage(bmp);
             Bitmap houghCirlceImage = circleTransform.ToBitmap();
 
@@ -47,7 +159,7 @@ namespace imageLab3
                     graphics.DrawEllipse(redPen, circle.X, circle.Y, circle.Radius, circle.Radius);
                 }
             }
-            return bmp;
+            return bmp2;
         }
         protected abstract Color calculateNewPixelColor(Bitmap sourceImage, int x, int y);
         public Bitmap processImage(Bitmap sourceImage)
