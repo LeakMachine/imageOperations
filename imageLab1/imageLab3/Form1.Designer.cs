@@ -32,13 +32,21 @@
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.открытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сравнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сегментироватьИзображениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.сегментироватьИзображениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -59,8 +67,8 @@
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.открытьToolStripMenuItem,
             this.сравнитьToolStripMenuItem,
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem,
-            this.сегментироватьИзображениеToolStripMenuItem});
+            this.сегментироватьИзображениеToolStripMenuItem,
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
@@ -68,30 +76,37 @@
             // открытьToolStripMenuItem
             // 
             this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(401, 26);
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(336, 26);
             this.открытьToolStripMenuItem.Text = "Открыть первую";
             this.открытьToolStripMenuItem.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
             // сравнитьToolStripMenuItem
             // 
             this.сравнитьToolStripMenuItem.Name = "сравнитьToolStripMenuItem";
-            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(401, 26);
+            this.сравнитьToolStripMenuItem.Size = new System.Drawing.Size(336, 26);
             this.сравнитьToolStripMenuItem.Text = "Метод Собеля";
             this.сравнитьToolStripMenuItem.Click += new System.EventHandler(this.сравнитьToolStripMenuItem_Click);
             // 
-            // алгоритДляДвухВложенныхОкружностейToolStripMenuItem
+            // сегментироватьИзображениеToolStripMenuItem
             // 
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem.Name = "алгоритДляДвухВложенныхОкружностейToolStripMenuItem";
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem.Size = new System.Drawing.Size(401, 26);
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem.Text = "Алгоритм для двух вложенных окружностей";
-            this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem.Click += new System.EventHandler(this.алгоритДляДвухВложенныхОкружностейToolStripMenuItem_Click);
+            this.сегментироватьИзображениеToolStripMenuItem.Name = "сегментироватьИзображениеToolStripMenuItem";
+            this.сегментироватьИзображениеToolStripMenuItem.Size = new System.Drawing.Size(336, 26);
+            this.сегментироватьИзображениеToolStripMenuItem.Text = "Сегментировать Изображение";
+            this.сегментироватьИзображениеToolStripMenuItem.Click += new System.EventHandler(this.сегментироватьИзображениеToolStripMenuItem_Click);
+            // 
+            // алгоритмДляПоискаОкружностейToolStripMenuItem
+            // 
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem.Name = "алгоритмДляПоискаОкружностейToolStripMenuItem";
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem.Size = new System.Drawing.Size(336, 26);
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem.Text = "Алгоритм для поиска окружностей";
+            this.алгоритмДляПоискаОкружностейToolStripMenuItem.Click += new System.EventHandler(this.алгоритмДляПоискаОкружностейToolStripMenuItem_Click);
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(16, 90);
+            this.pictureBox1.Location = new System.Drawing.Point(13, 48);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(743, 335);
+            this.pictureBox1.Size = new System.Drawing.Size(250, 250);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -99,24 +114,76 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(791, 90);
+            this.pictureBox2.Location = new System.Drawing.Point(270, 48);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(675, 408);
+            this.pictureBox2.Size = new System.Drawing.Size(250, 250);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
-            // сегментироватьИзображениеToolStripMenuItem
+            // pictureBox3
             // 
-            this.сегментироватьИзображениеToolStripMenuItem.Name = "сегментироватьИзображениеToolStripMenuItem";
-            this.сегментироватьИзображениеToolStripMenuItem.Size = new System.Drawing.Size(401, 26);
-            this.сегментироватьИзображениеToolStripMenuItem.Text = "Сегментировать Изображение";
-            this.сегментироватьИзображениеToolStripMenuItem.Click += new System.EventHandler(this.сегментироватьИзображениеToolStripMenuItem_Click);
+            this.pictureBox3.Location = new System.Drawing.Point(526, 48);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(250, 250);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox3.TabIndex = 6;
+            this.pictureBox3.TabStop = false;
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Location = new System.Drawing.Point(782, 48);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(250, 250);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox4.TabIndex = 7;
+            this.pictureBox4.TabStop = false;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(1065, 94);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 8;
+            this.textBox1.Text = "180";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(1210, 94);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 9;
+            this.textBox2.Text = "100";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(1074, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 16);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Threshhold";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1228, 60);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(50, 16);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Radius";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1532, 554);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.pictureBox4);
+            this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStrip1);
@@ -129,6 +196,8 @@
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -141,9 +210,15 @@
         private System.Windows.Forms.ToolStripMenuItem открытьToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem сравнитьToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem алгоритДляДвухВложенныхОкружностейToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.ToolStripMenuItem сегментироватьИзображениеToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.ToolStripMenuItem алгоритмДляПоискаОкружностейToolStripMenuItem;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

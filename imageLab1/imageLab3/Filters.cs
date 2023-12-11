@@ -8,52 +8,264 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel;
-using AForge;
-using AForge.Imaging;
-using AForge.Imaging.Filters;
-using AForge.Math.Geometry;
 
 
 
 namespace imageLab3
 {
+    class Hough
+    {
+        public int[,] Accum;
+
+        /**** Преобразование в полутоновое ****/
+        public void GrayScale(Bitmap img)
+        {
+            for (int y = 0; y < img.Height; y++)
+                for (int x = 0; x < img.Width; x++)
+                {
+                    Color c = img.GetPixel(x, y);
+                    /* формула расчета */
+                    int px = (int)((c.R * 0.3) + (c.G * 0.59) + (c.B * 0.11));
+                    img.SetPixel(x, y, Color.FromArgb(c.A, px, px, px));
+                }
+        }
+
+        /**** Бинаризация изображения ****/
+        public Bitmap Binarization(Bitmap img)
+        {
+            double threshold = 0.7;
+            for (int y = 0; y < img.Height; y++)
+                for (int x = 0; x < img.Width; x++)
+                    img.SetPixel(x, y, img.GetPixel(x, y).GetBrightness() < threshold ? Color.Black : Color.White);
+            return img;
+        }
+
+        /**** Выделение краев оператором Собеля ****/
+        public Bitmap Sobel(Bitmap src)
+        {
+            Bitmap dst = new Bitmap(src.Width, src.Height);
+            //оператор Собеля
+            int[,] dx = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+            int[,] dy = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
+
+            //Преобразование в полутоновое изображение
+            GrayScale(src);
+
+            int sumX, sumY, sum;
+            //'цикл прохода по всему изображению
+            for (int y = 0; y < src.Height - 1; y++)
+                for (int x = 0; x < src.Width - 1; x++)
+                {
+                    sumX = sumY = 0;
+                    if (y == 0 || y == src.Height - 1) sum = 0;
+                    else if (x == 0 || x == src.Width - 1) sum = 0;
+                    else
+                    {
+                        //цикл свертки оператором Собеля
+                        for (int i = -1; i < 2; i++)
+                            for (int j = -1; j < 2; j++)
+                            {
+                                //взять значение пикселя
+                                int c = src.GetPixel(x + i, y + j).R;
+                                //найти сумму произведений пикселя на значение из матрицы по X
+                                sumX += c * dx[i + 1, j + 1];
+                                //и сумму произведений пикселя на значение из матрицы по Y
+                                sumY += c * dy[i + 1, j + 1];
+                            }
+                        //найти приближенное значение величины градиента
+                        //sum = Math.Abs(sumX) + Math.Abs(sumY);
+                        sum = (int)Math.Sqrt(Math.Pow(sumX, 2) + Math.Pow(sumY, 2));
+                    }
+                    //провести нормализацию
+                    if (sum > 255) sum = 255;
+                    else if (sum < 0) sum = 0;
+                    //записать результат в выходное изображение
+                    dst.SetPixel(x, y, Color.FromArgb(255, sum, sum, sum));
+                }
+            //Binarization(dst);
+            return dst;
+        }
+
+        /**** Алгоритмы поиска локальных максимумов ****/
+
+        public Point SearchLine(Point Size, int tr)
+        {
+
+            int sum = 0, max = 0;
+            Point pt = new Point(0, 0);
+
+            for (int y = 0; y < Size.Y; y++)
+                for (int x = 0; x < Size.X; x++)
+                {
+                    sum = 0;
+                    if (max < Accum[y, x])
+                    {
+                        max = Accum[y, x]; pt.X = x; pt.Y = y;
+                    }
+                }
+
+            if (max < tr) pt.X = -1;
+            else Accum[pt.Y, pt.X] = 0;
+
+            return pt;
+        }
+
+        public Point SearchCircle(Point Size, int tr)
+        {
+
+            int sum = 0, max = 0;
+            Point pt = new Point(0, 0);
+
+            for (int y = 1; y < Size.Y - 1; y++)
+                for (int x = 1; x < Size.X - 1; x++)
+                {
+                    sum = 0;
+                    for (int i = -1; i <= 1; i++)
+                        for (int j = -1; j <= 1; j++)
+                            sum += Accum[y + i, x + j];
+
+                    if (max < sum)
+                    {
+                        max = sum; pt.X = x; pt.Y = y;
+                    }
+                }
+
+            if (max / 9 < tr) pt.X = -1;
+            else
+            {
+                for (int i = -1; i <= 1; i++)
+                    for (int j = -1; j <= 1; j++)
+                        Accum[pt.Y + i, pt.X + j] = 0;
+            }
+
+            return pt;
+        }
+
+        /**** Максимум в аккумуляторе ****/
+        public int AccumMax(Point Size)
+        {
+            int amax = 0;
+            for (int y = 0; y < Size.Y; y++)
+                for (int x = 0; x < Size.X; x++)
+                    if (Accum[y, x] > amax) amax = Accum[y, x];
+            return amax;
+        }
+
+        /**** Нормализация в аккумуляторе ****/
+        public void Normalize(Point Size, int amax)
+        {
+            for (int y = 0; y < Size.Y; y++)
+                for (int x = 0; x < Size.X; x++)
+                {
+                    int c = (int)(((double)Accum[y, x] / (double)amax) * 255.0);
+                    Accum[y, x] = c;
+                }
+        }
+
+        public Bitmap TransformLine(Bitmap img, int tr)
+        {
+            Point Size = new Point();
+            int mang = 180;
+
+            Size.Y = (int)Math.Round(Math.Sqrt(Math.Pow(img.Width, 2) + Math.Pow(img.Height, 2)));
+            Size.X = 180;
+            Accum = new int[(int)Size.Y, mang];
+
+            double dt = Math.PI / 180.0;
+            for (int y = 0; y < img.Height; y++)
+                for (int x = 0; x < img.Width; x++)
+                    if (img.GetPixel(x, y).R == 255)
+                    {
+                        for (int i = 0; i < mang; i++)
+                        {
+                            int row = (int)Math.Round(x * Math.Cos(dt * (double)i) + y * Math.Sin(dt * (double)i));
+                            if (row < Size.Y && row > 0)
+                                Accum[row, i]++;
+                        }
+                    }
+            // Поиск максимума
+            int amax = AccumMax(Size);
+            // Нормализация 
+            if (amax != 0)
+            {
+                img = new Bitmap(Size.X, Size.Y);
+                // Нормализация в аккумулятор
+                Normalize(Size, amax);
+                for (int y = 0; y < Size.Y; y++)
+                    for (int x = 0; x < Size.X; x++)
+                    {
+                        int c = Accum[y, x];
+                        img.SetPixel(x, y, Color.FromArgb(c, c, c));
+                    }
+            }
+            return img;
+        }
+
+        public Bitmap TransformCircle(Bitmap img, int tr, int r)
+        {
+            Point Size = new Point(img.Width, img.Height);
+            int mang = 360;
+
+            Accum = new int[Size.Y, Size.X];
+            double dt = Math.PI / 180.0;
+
+            for (int y = 0; y < img.Height; y++)
+                for (int x = 0; x < img.Width; x++)
+                    if (img.GetPixel(x, y).R == 255)
+                    {
+                        for (int i = 0; i < mang; i++)
+                        {
+                            int Tx = (int)Math.Round(x - r * Math.Cos(dt * (double)i));
+                            int Ty = (int)Math.Round(y + r * Math.Sin(dt * (double)i));
+                            if ((Tx < Size.X) && (Tx > 0) && (Ty < Size.Y) && (Ty > 0)) Accum[Ty, Tx]++;
+                        }
+                    }
+            // Поиск максимума
+            int amax = AccumMax(Size);
+            // Нормализация 
+            if (amax != 0)
+            {
+                img = new Bitmap(Size.X, Size.Y);
+                // Нормализация в аккумулятор
+                Normalize(Size, amax);
+                for (int y = 0; y < Size.Y; y++)
+                    for (int x = 0; x < Size.X; x++)
+                    {
+                        int c = Accum[y, x];
+                        img.SetPixel(x, y, Color.FromArgb(c, c, c));
+                    }
+            }
+            return img;
+        }
+    }
     class KMeansImageSegmentation
     {
         public Bitmap Main(Bitmap image)
         {
-
-            // Параметры алгоритма
-            int k = 5; // количество сегментов (центроидов)
+            int k = 15; // количество сегментов (центроидов)
             int maxIterations = 20; // максимальное количество итераций
             double threshold = 1.0; // пороговое значение изменения центров кластеров
 
-            // Инициализация K-средних
             List<Color> centroids = InitializeCentroids(image, k);
-            Dictionary<Color, List<Color>> clusters = new Dictionary<Color, List<Color>>();
+            Dictionary<Color, List<Point>> clusters = new Dictionary<Color, List<Point>>();
 
             for (int iteration = 0; iteration < maxIterations; iteration++)
             {
-                // Нахождение ближайшего центра для каждого пикселя и формирование кластеров
                 clusters = AssignPixelsToClusters(image, centroids);
 
-                // Обновление центров кластеров
                 List<Color> oldCentroids = new List<Color>(centroids);
-                centroids = UpdateCentroids(clusters);
+                centroids = UpdateCentroids(image, clusters);
 
-                // Проверка на сходимость (по пороговому значению изменения центров)
                 double maxShift = MaxShift(oldCentroids, centroids);
                 if (maxShift < threshold)
                     break;
             }
 
-            // Применение цветов кластеров к изображению
             ApplyClustersToImage(image, clusters);
 
-            // Сохранение результата
             return image;
         }
 
-        // Инициализация центроидов случайными цветами изображения
         static List<Color> InitializeCentroids(Bitmap image, int k)
         {
             List<Color> centroids = new List<Color>();
@@ -69,14 +281,13 @@ namespace imageLab3
             return centroids;
         }
 
-        // Нахождение ближайшего центра для каждого пикселя и формирование кластеров
-        static Dictionary<Color, List<Color>> AssignPixelsToClusters(Bitmap image, List<Color> centroids)
+        static Dictionary<Color, List<Point>> AssignPixelsToClusters(Bitmap image, List<Color> centroids)
         {
-            Dictionary<Color, List<Color>> clusters = new Dictionary<Color, List<Color>>();
+            Dictionary<Color, List<Point>> clusters = new Dictionary<Color, List<Point>>();
 
             foreach (Color centroid in centroids)
             {
-                clusters[centroid] = new List<Color>();
+                clusters[centroid] = new List<Point>();
             }
 
             for (int x = 0; x < image.Width; x++)
@@ -85,14 +296,13 @@ namespace imageLab3
                 {
                     Color pixel = image.GetPixel(x, y);
                     Color closestCentroid = FindClosestCentroid(pixel, centroids);
-                    clusters[closestCentroid].Add(pixel);
+                    clusters[closestCentroid].Add(new Point(x, y));
                 }
             }
 
             return clusters;
         }
 
-        // Нахождение ближайшего центра для пикселя
         static Color FindClosestCentroid(Color pixel, List<Color> centroids)
         {
             double minDistance = double.MaxValue;
@@ -111,7 +321,6 @@ namespace imageLab3
             return closest;
         }
 
-        // Расчет евклидова расстояния между цветами
         static double CalculateColorDistance(Color a, Color b)
         {
             double redDiff = a.R - b.R;
@@ -121,40 +330,42 @@ namespace imageLab3
             return Math.Sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
         }
 
-        // Обновление центров кластеров
-        static List<Color> UpdateCentroids(Dictionary<Color, List<Color>> clusters)
+        static List<Color> UpdateCentroids(Bitmap image, Dictionary<Color, List<Point>> clusters)
         {
             List<Color> centroids = new List<Color>();
 
             foreach (var cluster in clusters)
             {
-                Color newCentroid = CalculateClusterMean(cluster.Value);
+                Color newCentroid = CalculateClusterMean(image, cluster.Value);
                 centroids.Add(newCentroid);
             }
 
             return centroids;
         }
 
-        // Вычисление среднего цвета кластера
-        static Color CalculateClusterMean(List<Color> cluster)
+        static Color CalculateClusterMean(Bitmap image, List<Point> cluster)
         {
-            int totalRed = 0, totalGreen = 0, totalBlue = 0;
+            int totalRed = 0, totalGreen = 0, totalBlue = 0, totalX = 0, totalY = 0;
 
-            foreach (Color pixel in cluster)
+            foreach (Point point in cluster)
             {
-                totalRed += pixel.R;
-                totalGreen += pixel.G;
-                totalBlue += pixel.B;
+                Color pixelColor = GetPixelColorFromPoint(image, point);
+                totalRed += pixelColor.R;
+                totalGreen += pixelColor.G;
+                totalBlue += pixelColor.B;
+                totalX += point.X;
+                totalY += point.Y;
             }
 
             int meanRed = totalRed / cluster.Count;
             int meanGreen = totalGreen / cluster.Count;
             int meanBlue = totalBlue / cluster.Count;
+            int meanX = totalX / cluster.Count;
+            int meanY = totalY / cluster.Count;
 
             return Color.FromArgb(meanRed, meanGreen, meanBlue);
         }
 
-        // Вычисление максимального изменения центров кластеров
         static double MaxShift(List<Color> oldCentroids, List<Color> newCentroids)
         {
             double maxShift = 0;
@@ -171,21 +382,33 @@ namespace imageLab3
             return maxShift;
         }
 
-        // Применение цветов кластеров к изображению
-        static void ApplyClustersToImage(Bitmap image, Dictionary<Color, List<Color>> clusters)
+        static void ApplyClustersToImage(Bitmap image, Dictionary<Color, List<Point>> clusters)
         {
-            for (int x = 0; x < image.Width; x++)
+            foreach (var cluster in clusters)
             {
-                for (int y = 0; y < image.Height; y++)
+                Color clusterColor = cluster.Key;
+
+                foreach (Point point in cluster.Value)
                 {
-                    Color pixel = image.GetPixel(x, y);
-                    Color closestCentroid = FindClosestCentroid(pixel, new List<Color>(clusters.Keys));
-                    image.SetPixel(x, y, closestCentroid);
+                    image.SetPixel(point.X, point.Y, clusterColor);
                 }
             }
         }
+
+        static Color GetPixelColorFromPoint(Bitmap image, Point point)
+        {
+            if (point.X >= 0 && point.X < image.Width && point.Y >= 0 && point.Y < image.Height)
+            {
+                return image.GetPixel(point.X, point.Y);
+            }
+            else
+            {
+                // Возвращаем пустой цвет в случае выхода за границы изображения
+                return Color.Empty;
+            }
+        }
     }
-    abstract class Filters
+abstract class Filters
     {
         public double[] erlang;
         public int Clamp(int value, int min, int max)
@@ -303,31 +526,6 @@ namespace imageLab3
             }
 
             return nearestCentroid;
-        }
-
-        public Bitmap houghCircles(Bitmap bmp2)
-        {
-            var filter = new FiltersSequence(new IFilter[]
-            {
-                Grayscale.CommonAlgorithms.BT709,
-                new Threshold(0x40)
-            });
-            Bitmap bmp = filter.Apply(bmp2);
-            HoughCircleTransformation circleTransform = new HoughCircleTransformation(10);
-            circleTransform.ProcessImage(bmp);
-            Bitmap houghCirlceImage = circleTransform.ToBitmap();
-
-            HoughCircle[] circles = circleTransform.GetCirclesByRelativeIntensity(0.5);
-            int numCircles = circleTransform.CirclesCount;
-            foreach (HoughCircle circle in circles)
-            {
-                Pen redPen = new Pen(Color.Red, 1);
-                using (var graphics = Graphics.FromImage(bmp2))
-                {
-                    graphics.DrawEllipse(redPen, circle.X, circle.Y, circle.Radius, circle.Radius);
-                }
-            }
-            return bmp2;
         }
         protected abstract Color calculateNewPixelColor(Bitmap sourceImage, int x, int y);
         public Bitmap processImage(Bitmap sourceImage)
