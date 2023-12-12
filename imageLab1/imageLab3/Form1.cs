@@ -95,6 +95,7 @@ namespace imageLab3
             if (pictureBox1.Image == null) return;
 
             int r = Convert.ToInt32(textBox2.Text);
+            int r2 = Convert.ToInt32(textBox3.Text);
             int tr = Convert.ToInt32(textBox1.Text);
 
             pictureBox3.Image = alg.TransformCircle(new Bitmap(pictureBox2.Image), tr, r);
@@ -103,14 +104,27 @@ namespace imageLab3
             Bitmap img = new Bitmap(pictureBox3.Image);
             Graphics g = Graphics.FromImage(pictureBox4.Image);
             Pen pen = new Pen(Color.Red, 3);
-
+            Point mainCenter = new Point();
             Point Size = new Point(pictureBox1.Image.Width, pictureBox1.Image.Height);
             while (true)
             {
                 Point pt = alg.SearchCircle(Size, tr);
                 if (pt.X == -1) break;
                 g.DrawEllipse(pen, pt.X - r, pt.Y - r, r + r, r + r);
+                mainCenter = pt;
             }
+
+            pictureBox3.Image = alg.TransformCircle(new Bitmap(pictureBox2.Image), tr, r2);
+
+            Size = new Point(pictureBox1.Image.Width, pictureBox1.Image.Height);
+            while (true)
+            {
+                Point pt = alg.SearchCircle(Size, tr);
+                if (pt.X > mainCenter.X || pt.Y > mainCenter.Y) break;
+                if (pt.X == -1) break;
+                g.DrawEllipse(pen, pt.X - r2, pt.Y - r2, r2 + r2, r2 + r2);
+            }
+
             pictureBox4.Refresh();
         }
     }
